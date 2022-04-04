@@ -1,0 +1,89 @@
+
+## Create project directory
+
+mkdir camelapp
+cd camelapp
+
+## Gradle init
+
+gradle init
+
+Select type of project to generate:
+  1: basic
+  2: application
+  3: library
+  4: Gradle plugin
+Enter selection (default: basic) [1..4] 2
+
+Select implementation language:
+  1: C++
+  2: Groovy
+  3: Java
+  4: Kotlin
+  5: Scala
+  6: Swift
+Enter selection (default: Java) [1..6] 2
+
+Split functionality across multiple subprojects?:
+  1: no - only one application project
+  2: yes - application and library projects
+Enter selection (default: no - only one application project) [1..2] 2
+
+Select build script DSL:
+  1: Groovy
+  2: Kotlin
+Enter selection (default: Groovy) [1..2] 1
+
+Generate build using new APIs and behavior (some features may change in the next minor release)? (default: no) [yes, no] no
+
+Project name (default: camelapp):
+Source package (default: camelapp): net.camelapp
+
+> Task :init
+Get more help with your project: https://docs.gradle.org/7.4/samples/sample_building_groovy_applications_multi_project.html
+
+BUILD SUCCESSFUL in 2m 17s
+2 actionable tasks: 2 executed
+
+## Git init
+
+git init --initial-branch=main
+git add .
+git commit -m "initial commit"
+
+[main (root-commit) 70f4049] initial commit
+ 22 files changed, 714 insertions(+)
+ create mode 100644 .gitattributes
+ create mode 100644 .gitignore
+ create mode 100644 app/build.gradle
+ create mode 100644 app/src/main/groovy/net/camelapp/app/App.groovy
+ create mode 100644 app/src/main/groovy/net/camelapp/app/MessageUtils.groovy
+ create mode 100644 app/src/test/groovy/net/camelapp/app/MessageUtilsTest.groovy
+ create mode 100644 buildSrc/build.gradle
+ create mode 100644 buildSrc/src/main/groovy/net.camelapp.groovy-application-conventions.gradle
+ create mode 100644 buildSrc/src/main/groovy/net.camelapp.groovy-common-conventions.gradle
+ create mode 100644 buildSrc/src/main/groovy/net.camelapp.groovy-library-conventions.gradle
+ create mode 100644 gradle/wrapper/gradle-wrapper.jar
+ create mode 100644 gradle/wrapper/gradle-wrapper.properties
+ create mode 100755 gradlew
+ create mode 100644 gradlew.bat
+ create mode 100644 list/build.gradle
+ create mode 100644 list/src/main/groovy/net/camelapp/list/LinkedList.groovy
+ create mode 100644 list/src/test/groovy/net/camelapp/list/LinkedListTest.groovy
+ create mode 100644 settings.gradle
+ create mode 100644 utilities/build.gradle
+ create mode 100644 utilities/src/main/groovy/net/camelapp/utilities/JoinUtils.groovy
+ create mode 100644 utilities/src/main/groovy/net/camelapp/utilities/SplitUtils.groovy
+ create mode 100644 utilities/src/main/groovy/net/camelapp/utilities/StringUtils.groovy
+
+## Gradle run
+
+./gradlew run
+
+Downloading https://services.gradle.org/distributions/gradle-7.4-bin.zip
+> Task :app:run
+Hello World!
+
+BUILD SUCCESSFUL in 42s
+15 actionable tasks: 15 executed
+
