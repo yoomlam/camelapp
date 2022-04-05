@@ -5,6 +5,8 @@
 plugins {
     id 'net.camelapp.groovy-application-conventions'
 
+    id "io.freefair.lombok" version "6.3.0"
+
     // Spring
     id 'org.springframework.boot' version '2.6.6'
     id 'io.spring.dependency-management' version '1.0.11.RELEASE'
@@ -26,8 +28,22 @@ dependencies {
     // Spring
     implementation 'org.springframework.boot:spring-boot-starter-web'
 
+    // JPA and DB
+    implementation "org.springframework.boot:spring-boot-starter-data-jpa:${springVersion}"
+    implementation 'org.apache.derby:derby'
+
     // Camel
     implementation "org.apache.camel.springboot:camel-spring-boot-starter:${camelVersion}"
+    implementation "org.apache.camel.springboot:camel-jms-starter:${camelVersion}"
+    implementation "org.apache.camel.springboot:camel-rabbitmq-starter:${camelVersion}"
+    implementation "org.apache.camel.springboot:camel-servlet-starter:${camelVersion}"
+    implementation "org.apache.camel.springboot:camel-jackson-starter:${camelVersion}"
+    implementation "org.apache.camel.springboot:camel-swagger-java-starter:${camelVersion}"
+    // Needed to send POST to external API
+    implementation "org.apache.camel.springboot:camel-http-starter:${camelVersion}"
+
+    // JRuby
+    implementation 'org.jruby:jruby-complete:9.3.3.0'
 
     // testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }

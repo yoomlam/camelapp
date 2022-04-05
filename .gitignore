@@ -1,3 +1,7 @@
+
+# Derby DB
+derby.log
+
 # Ignore Gradle project-specific cache directory
 .gradle
 

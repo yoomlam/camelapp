@@ -104,6 +104,8 @@ BUILD SUCCESSFUL in 42s
 - Gradle: https://www.tutorialspoint.com/gradle/index.htm
 - https://docs.gradle.org/current/userguide/organizing_gradle_projects.html#sec:build_sources
 
+-----------------------------------
+
 ## Add Spring
 
 1. Go to https://start.spring.io/
@@ -142,3 +144,21 @@ The following guides illustrate how to use some features concretely:
 These additional references should also help you:
 
 * [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+
+-----------------------------------
+
+## Run RabbitMQ as Docker container
+
+docker run --rm -d -p 5672:5672 --name camelapp-rabbit rabbitmq:3
+Or use `startRabbitMQ` function from the `sourceme.sh` file.
+
+## Implement Camel routes
+
+- Add JPA, DB, and Camel starter dependencies to app/build.gradle
+- Add classes to configure Camel routes, models, etc.
+
+See README.me for testing instructions.
+
+### Readings
+* [Working with Spring and Apache Camel](https://reflectoring.io/spring-camel/)
+* Other Camel starters: https://camel.apache.org/camel-spring-boot/3.15.x/list.html
