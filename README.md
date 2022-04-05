@@ -15,10 +15,14 @@ This project is skeleton code demonstrating how a Spring-based app uses Apache C
 - `list` and `utilities` directories - created by Gradle to demonstrate subprojects
 - `buildSrc` - created by Gradle to demonstrate sharable build configurations
 
+All the new code is within the `app` directory. The other directories are left for learning and experimenting with Gradle.
+
+Also take a look at the first few commits in this repo. They follow the steps documented in `init.log`.
+
 ### Software Design
 - QP (Queue-Processor(s)) component acts like an internal microservice that modularizes functionalities so that it can be updated and maintained more easily
-    - Consists of one *Queue*, which has a globally unique *name* and simply holds items. Items can be added to the queue by anything. Queue’s contents should be persisted to restore RRD state in case of system failure.
-    - A *Processor* processes items from the Queue. They are stateless and preferably idempotent. A Processor can be implemented in practically any language (Java, Ruby, Python, etc.), as long as it can interface with a [Message Queue](https://en.wikipedia.org/wiki/Message_queue) (in this case, [RabbitMQ](https://en.wikipedia.org/wiki/RabbitMQ) but [Amazon SQS](https://en.wikipedia.org/wiki/Amazon_Simple_Queue_Service) could be used). For scalability, a Processor can be replicated to process items from the Queue in parallel — shown as “instance 1” and “instance 2” in the diagram.
+    - Consists of one *Queue*, which has a globally unique *name* and simply holds items. Items can be added to the queue by anything. Queue’s contents should be persisted to restore RRD state in case of system failure.
+    - A *Processor* processes items from the Queue. They are stateless and preferably idempotent. A Processor can be implemented in practically any language (Java, Ruby, Python, etc.), as long as it can interface with a [Message Queue](https://en.wikipedia.org/wiki/Message_queue) (in this case, [RabbitMQ](https://en.wikipedia.org/wiki/RabbitMQ) but [Amazon SQS](https://en.wikipedia.org/wiki/Amazon_Simple_Queue_Service) could be used). For scalability, a Processor can be replicated to process items from the Queue in parallel — shown as “instance 1” and “instance 2” in the diagram.
 
 ```mermaid
 flowchart LR
@@ -98,7 +102,48 @@ class router,qaP,htnP,apneaP,asthmaP,manualP processor
 - The QA Processor performs quality assurance; to validate the RRD processing output and prep it for downstream processing (external to RRD). (Not shown in the diagram: another Manual QP component can be added for cases where the QA Processor finds an unsupported problem with the results.)
 - If requested as part of the original RRD API request, the Notifier Processor will execute any requested callbacks to indicate completion of RRD processing on the claim.
 
-## Build and Test
+
+## Application start-up
+
+When `./gradlew bootRun` is run, the following happens:
+- Spring looks for and runs the class with `@SpringBootApplication`, which determines the primary Java package to search for `@Configuration`, `@Component`, `@Service`, and other Spring-annotated classes.
+- Spring creates instances based on `@Bean` declarations in order to fulfill `@Autowired` declarations.
+- `@Value` variable values are populated from `application.properties` and `application.yml` files.
+- The `AppConfig` class performs some set up of the Camel context, while `CamelRestConfiguration`, `RrdApiRoute`, and `ClaimProcessorRoute` set up Camel routes (as described in the "Camel Routes" section).
+
+
+## Camel Routes
+
+Class `CamelRestConfiguration` sets up the REST endpoint `contextPath` and `/api-doc`.
+Class `RrdApiRoute` and `ClaimProcessorRoute` set up Camel routes:
+- REST endpoints:
+  + doc-api (`rest-api:///api-doc`) - Automatically-generated API docs based on Camel routes
+  + rest-POST-claim (`rest://post:/claims:/`) - REST endpoint where new claims are submitted
+  + claims-getAll (`rest://get:/claims:/`) - REST endpoint to list all claims
+  + claims-getById (`rest://get:/claims:/{id}`) - REST endpoint to get a specific claim
+  + claimDetails-getById (`rest://get:/claims:/details/{id}`) - REST endpoint to get a specific claim using different `ClaimService` implementation
+  + claim-status-change (`rest://get:/claims:/{id}/status-diff-from/{status}`) - REST endpoint to block until the claim's status changes from the specified status
+- occurs as part of the `rest-POST-claim` route:
+  + route2 (`seda://addClaim`) - to save submitted Claim to DB and assign a UUID before sending it for processing
+  + route1 (`seda://logToFile`) - to save submitted claims to a log file
+  + routing-claim (`seda://claim-router`) - to decide how the claim will be processed
+- routes to claim processors:
+  + seda-claimTypeA (`seda://claimTypeA`) - SEDA route to have the claim processed by processor A (in the same JVM)
+  + claimTypeB (`rabbitmq://claimTypeB`) - RabbitMQ route to have the claim processed by processor B (located anywhere that has access to the RabbitMQ service)
+  + claimTypeD (`rabbitmq://claimTypeD`) - RabbitMQ route to have the claim processed by processor D (located anywhere that has access to the RabbitMQ service)
+- route3 (`seda://claim-rrd-processed-{submission_id}`) - route used by processors to notify that a claim completed processing
+
+Processors:
+- `ClaimProcessorA` is written in Java and triggered by a SEDA route
+- `ClaimProcessorB` is written in Groovy and triggered by a RabbitMQ route
+- `ClaimProcessorD` executes Ruby code within the JVM and triggered by a RabbitMQ route
+
+<!-- - internal REST endpoints
+  + route4 (`rest://post:/claim:processA/`) - to process claim of type A via a REST endpoint
+  + inject-claim (`rest://get:/claim:processA/`) -
+ -->
+
+## Run and Test
 
 For each new console, run `source sourceme.sh` to define convenience functions.
 
@@ -122,5 +167,13 @@ curlWaitForStatusChange
 4. In another console, submit requests to the API:
 ```sh
 curlPostContention A
-# (Expect console in prior step to return)
+# (Expect console in prior step to return a response with "resultStatus" : "Success")
 ```
+5. To see what an error looks like on the server and client side, try:
+```sh
+curl -H "Content-Type: application/json" 'http://localhost:8080/camelapp/claim/processA/1234567890'
+
+# To get a successful response, use a UUID from the `curlClaims` call
+curl -H "Content-Type: application/json" 'http://localhost:8080/camelapp/claim/processA/eaa3e096-c50f-47f9-8c3b-9180ce4f3236'
+```
+6.

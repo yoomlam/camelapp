@@ -1,5 +1,9 @@
 # Source this file in your shell
 
+linter(){
+  docker run --rm -u "$(id -u):$(id -g)" -w=/tmp -v "$PWD":/tmp nvuillam/npm-groovy-lint
+}
+
 startRabbitMQ(){
 	docker run --rm -d -p 5672:5672 --name camelapp-rabbit rabbitmq:3
 }

@@ -1,6 +1,5 @@
 package net.camelapp.services;
 
-import org.jruby.embed.ScriptingContainer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import net.camelapp.models.Claim;
@@ -14,10 +13,6 @@ public class ClaimProcessorA {
 
     @Autowired
     ClaimService claimService;
-
-    public Claim claimFactory() {
-        return Claim.builder().submission_id("subm1").claimant_id("vet2").build();
-    }
 
     public Payload process(Claim claim) {
         HashMap<String, Object> results = new HashMap<String, Object>();

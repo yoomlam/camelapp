@@ -1,6 +1,6 @@
 package net.camelapp.models;
 
-public enum ClaimStatus {
+enum ClaimStatus {
     CREATED,
     DONE_RRD,
     COMPLETED

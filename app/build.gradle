@@ -5,7 +5,7 @@
 plugins {
     id 'net.camelapp.groovy-application-conventions'
 
-    id "io.freefair.lombok" version "6.3.0"
+    // id 'io.freefair.lombok' version '6.3.0'
 
     // Spring
     id 'org.springframework.boot' version '2.6.6'
@@ -18,8 +18,8 @@ description = 'Demo Camel app with microservices'
 sourceCompatibility = '17'
 
 // springVersion should match version for plugin org.springframework.boot above
-def springVersion = "2.6.6"
-def camelVersion = "3.15.0"
+def springVersion = '2.6.6'
+def camelVersion = '3.15.0'
 
 dependencies {
     implementation 'org.apache.commons:commons-text'
