@@ -1,4 +1,15 @@
 
+## Tools
+
+Recommend asdf runtime version manager to install tools:
+```
+❯ asdf current
+gradle          7.4
+java            openjdk-17
+maven           3.8.4
+ruby            2.7.4
+```
+
 ## Create project directory
 
 mkdir camelapp
@@ -87,3 +98,47 @@ Hello World!
 BUILD SUCCESSFUL in 42s
 15 actionable tasks: 15 executed
 
+## Gradle Readings
+
+- Groovy: https://www.guru99.com/groovy-tutorial.html
+- Gradle: https://www.tutorialspoint.com/gradle/index.htm
+- https://docs.gradle.org/current/userguide/organizing_gradle_projects.html#sec:build_sources
+
+## Add Spring
+
+1. Go to https://start.spring.io/
+2. Select Gradle, Groovy, Spring Boot 2.6.6, Jar, Java 17
+with dependencies: Apache Camel, Lombok, Spring Web
+3. Download and unpack zip
+4. Copy files over to this project
+   - inserted snippets into `app/build.gradle`
+   - copied over `application.properties`, `RouterappApplication.groovy`, `RouterappApplicationTests.groovy`
+   - corrected file package
+5. Test Spring app: `./gradlew bootRun`
+
+## Spring Readings
+
+- https://www.baeldung.com/spring-mvc-annotations
+- https://www.baeldung.com/spring-boot-annotations
+- https://www.tutorialspoint.com/jpa/index.htm
+
+### Reference Documentation
+For further reference, please consider the following sections:
+
+* [Official Gradle documentation](https://docs.gradle.org)
+* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/docs/2.6.6/gradle-plugin/reference/html/)
+* [Create an OCI image](https://docs.spring.io/spring-boot/docs/2.6.6/gradle-plugin/reference/html/#build-image)
+* [Spring Web](https://docs.spring.io/spring-boot/docs/2.6.6/reference/htmlsingle/#boot-features-developing-web-applications)
+
+### Guides
+The following guides illustrate how to use some features concretely:
+
+* [Using Apache Camel with Spring Boot](https://camel.apache.org/camel-spring-boot/latest/spring-boot.html)
+* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
+* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
+* [Building REST services with Spring](https://spring.io/guides/tutorials/bookmarks/)
+
+### Additional Links
+These additional references should also help you:
+
+* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)

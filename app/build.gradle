@@ -4,14 +4,36 @@
 
 plugins {
     id 'net.camelapp.groovy-application-conventions'
+
+    // Spring
+    id 'org.springframework.boot' version '2.6.6'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 }
+
+group = 'net.camelapp'
+version = '0.0.1-SNAPSHOT'
+description = 'Demo Camel app with microservices'
+sourceCompatibility = '17'
+
+// springVersion should match version for plugin org.springframework.boot above
+def springVersion = "2.6.6"
+def camelVersion = "3.15.0"
 
 dependencies {
     implementation 'org.apache.commons:commons-text'
     implementation project(':utilities')
+
+    // Spring
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    // Camel
+    implementation "org.apache.camel.springboot:camel-spring-boot-starter:${camelVersion}"
+
+    // testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
 
 application {
+    // Not needed for Spring applications
     // Define the main class for the application.
-    mainClass = 'net.camelapp.app.App'
+    // mainClass = 'net.camelapp.app.App'
 }
