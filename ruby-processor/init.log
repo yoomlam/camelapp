@@ -1,0 +1,24 @@
+rbenv local 2.7.4
+bundle init
+echo "gem 'rspec', '~> 3.0'" >> Gemfile
+bundle install
+rspec --init
+
+
+## In RabbitMQ docker container:
+
+docker run -d --hostname localhost -p 5672:5672 --name some-rabbit rabbitmq:3
+
+### With management UI
+docker run -d --hostname localhost -p 5672:5672 -p 15672:15672 --name some-rabbit rabbitmq:3-management
+
+docker exec -it some-rabbit /bin/bash
+
+rabbitmqctl list_exchanges
+rabbitmqctl list_queues
+rabbitmqctl list_bindings
+
+https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitmq/
+rabbitmqctl stop_app
+rabbitmqctl reset
+rabbitmqctl start_app

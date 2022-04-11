@@ -176,4 +176,23 @@ curl -H "Content-Type: application/json" 'http://localhost:8080/camelapp/claim/p
 # To get a successful response, use a UUID from the `curlClaims` call
 curl -H "Content-Type: application/json" 'http://localhost:8080/camelapp/claim/processA/eaa3e096-c50f-47f9-8c3b-9180ce4f3236'
 ```
-6.
+6. Try the other routes/processors by submitting different a contention:
+```sh
+curlPostContention A
+curlPostContention B
+curlPostContention D
+
+# (Expect this to fail since there's no processor C)
+curlPostContention C
+```
+7. Start processor C in another console:
+```sh
+cd ruby-processor
+bundle install
+
+ruby processor_c.rb
+```
+Then retry contention C:
+```sh
+curlPostContention C
+```
