@@ -6,6 +6,8 @@ This project is skeleton code demonstrating how a Spring-based app uses Apache C
 - Allow folks to familiarize themselves with Java, Gradle, Spring, and Camel tools
 - Enables folks to experiment with the code
 
+(Interpret any reference to "RRD" as simply an acronym for this application.)
+
 ## Files and directories
 
 - `init.log` - describes how this project was created, along with links to reading materials
@@ -21,7 +23,7 @@ Also take a look at the first few commits in this repo. They follow the steps do
 
 ### Software Design
 - QP (Queue-Processor(s)) component acts like an internal microservice that modularizes functionalities so that it can be updated and maintained more easily
-    - Consists of one *Queue*, which has a globally unique *name* and simply holds items. Items can be added to the queue by anything. Queue’s contents should be persisted to restore RRD state in case of system failure.
+    - Consists of one *Queue*, which has a globally unique *name* and simply holds items. Items can be added to the queue by anything. Queue’s contents should be persisted to restore application state in case of system failure.
     - A *Processor* processes items from the Queue. They are stateless and preferably idempotent. A Processor can be implemented in practically any language (Java, Ruby, Python, etc.), as long as it can interface with a [Message Queue](https://en.wikipedia.org/wiki/Message_queue) (in this case, [RabbitMQ](https://en.wikipedia.org/wiki/RabbitMQ) but [Amazon SQS](https://en.wikipedia.org/wiki/Amazon_Simple_Queue_Service) could be used). For scalability, a Processor can be replicated to process items from the Queue in parallel — shown as “instance 1” and “instance 2” in the diagram.
 
 ```mermaid
@@ -32,21 +34,21 @@ subgraph some-qp[x QP]
   someQ([x Queue]) --> someProcess[/x Processor\ninstance 1/] & someProcess2[/x Processor\ninstance 2/]
 end
 
-classDef queue fill:#0ee,stroke:#333,stroke-width:4px
+classDef queue fill:#0ee,stroke-width:4px
 class someQ queue
-classDef processor fill:#f9f,stroke:#333,stroke-width:2px
+classDef processor fill:#f9f,stroke-width:2px
 class anotherthing,someProcess,someProcess2 processor
 ```
 
-- QP components will be connected together using well-tested and stable [Enterprise Integration Patterns](https://en.wikipedia.org/wiki/Enterprise_Integration_Patterns) (EIP) tools (such as [Apache Camel](https://camel.apache.org/manual/faq/what-is-camel.html)) so that we can focus on RRD functionality and less on “glue code”.
-    - As the RDD prototype becomes more complex, using the same QP pattern for all RRD functionalities promotes low [software coupling](https://en.wikipedia.org/wiki/Coupling_(computer_programming)) and, as a result, simplifies debugging and maintenance.
+- QP components will be connected together using well-tested and stable [Enterprise Integration Patterns](https://en.wikipedia.org/wiki/Enterprise_Integration_Patterns) (EIP) tools (such as [Apache Camel](https://camel.apache.org/manual/faq/what-is-camel.html)) so that we can focus on application functionality and less on “glue code”.
+    - As the RDD prototype becomes more complex, using the same QP pattern for all application functionalities promotes low [software coupling](https://en.wikipedia.org/wiki/Coupling_(computer_programming)) and, as a result, simplifies debugging and maintenance.
     - Using EIPs facilitate future migration of parts of the architecture to cloud-based services if needed (see [Implementing EIP with AWS](https://aws.amazon.com/blogs/compute/implementing-enterprise-integration-patterns-with-aws-messaging-services-point-to-point-channels/) and [with Azure](https://docs.microsoft.com/en-us/azure/architecture/reference-architectures/enterprise-integration/queues-events)), where for example a Processor could be implemented as AWS Lambda.
     - Using the Apache Camel implementation of EIPs provides [time-saving features](https://stackoverflow.com/a/11540451) and integrations with many existing [tools](https://camel.apache.org/components/3.15.x/index.html) and [data formats](https://camel.apache.org/components/3.15.x/dataformats/index.html).
     - Example workflow using QP components:
 ```mermaid
 flowchart TB
 
-rrd-api[[RRD API]] -.claim.-> newClaimsQ([new claims Q])
+rrd-api[[My API]] -.claim.-> newClaimsQ([new claims Q])
 
 subgraph router-qp[Router QP]
   newClaimsQ --> router[/Claim Router/]
@@ -90,17 +92,17 @@ classDef processor fill:#f9f,stroke:#333,stroke-width:2px
 class router,qaP,htnP,apneaP,asthmaP,manualP processor
 ```
 
-- The Router QP responds to RRD API requests and determines how the claim should be processed
+- The Router QP responds to API requests and determines how the claim should be processed
     - For each new claim, it quickly validates the claim to send a response back to the API caller.
     - Based on the claim characteristics and any other data it gathers, it determines how the claim should proceed and adds the claim to an appropriate Queue for processing.
 - Each hypertension/asthma/apnea QP components is expected to:
     1. receive an item from its Queue (either pushed or pulled)
     2. gathers health data by querying external data sources
-    3. decides on the claim (see details in the “RRD processing” section)
+    3. decides on the claim
     4. adds a new item to the QA Queue
 - A Manual QP component can be included for discovery and research of new types of claims to fast track, or for scenarios where a claim has curious characteristics that require manual intervention.
-- The QA Processor performs quality assurance; to validate the RRD processing output and prep it for downstream processing (external to RRD). (Not shown in the diagram: another Manual QP component can be added for cases where the QA Processor finds an unsupported problem with the results.)
-- If requested as part of the original RRD API request, the Notifier Processor will execute any requested callbacks to indicate completion of RRD processing on the claim.
+- The QA Processor performs quality assurance; to validate the processing output and prep it for downstream processing (external to the application). (Not shown in the diagram: another Manual QP component can be added for cases where the QA Processor finds an unsupported problem with the results.)
+- If requested as part of the original API request, the Notifier Processor will execute any requested callbacks to indicate completion of this application's processing on the claim.
 
 
 ## Application start-up
