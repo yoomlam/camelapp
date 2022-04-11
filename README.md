@@ -8,6 +8,8 @@ This project is skeleton code demonstrating how a Spring-based app uses Apache C
 
 (Interpret any reference to "RRD" as simply an acronym for this application.)
 
+For TLDR, skip to the "Run and Test" section at the bottom.
+
 ## Files and directories
 
 - `init.log` - describes how this project was created, along with links to reading materials
@@ -19,7 +21,7 @@ This project is skeleton code demonstrating how a Spring-based app uses Apache C
 
 All the new code is within the `app` directory. The other directories are left for learning and experimenting with Gradle.
 
-Also take a look at the first few commits in this repo. They follow the steps documented in `init.log`.
+Also take a look at [the first few commits](https://github.com/yoomlam/camelapp/commits/main) in this repo. They follow the steps documented in `init.log`.
 
 ### Software Design
 - QP (Queue-Processor(s)) component acts like an internal microservice that modularizes functionalities so that it can be updated and maintained more easily
@@ -113,6 +115,13 @@ When `./gradlew bootRun` is run, the following happens:
 - `@Value` variable values are populated from `application.properties` and `application.yml` files.
 - The `AppConfig` class performs some set up of the Camel context, while `CamelRestConfiguration`, `RrdApiRoute`, and `ClaimProcessorRoute` set up Camel routes (as described in the "Camel Routes" section).
 
+To learn more, check out these tutorials:
+* https://scoutapm.com/blog/java-for-rubyists
+* https://www.guru99.com/groovy-tutorial.html
+* Gradle uses Groovy https://www.tutorialspoint.com/gradle/index.htm
+* https://www.baeldung.com/spring-mvc-annotations
+* https://www.baeldung.com/spring-boot-annotations
+* https://www.tutorialspoint.com/jpa/index.htm
 
 ## Camel Routes
 
@@ -130,46 +139,85 @@ Class `RrdApiRoute` and `ClaimProcessorRoute` set up Camel routes:
   + route1 (`seda://logToFile`) - to save submitted claims to a log file
   + routing-claim (`seda://claim-router`) - to decide how the claim will be processed
 - routes to claim processors:
-  + seda-claimTypeA (`seda://claimTypeA`) - SEDA route to have the claim processed by processor A (in the same JVM)
-  + claimTypeB (`rabbitmq://claimTypeB`) - RabbitMQ route to have the claim processed by processor B (located anywhere that has access to the RabbitMQ service)
-  + claimTypeD (`rabbitmq://claimTypeD`) - RabbitMQ route to have the claim processed by processor D (located anywhere that has access to the RabbitMQ service)
+  + seda-claimTypeA (`seda://claimTypeA`) - SEDA route to have the claim processed by Java processor A (in the same JVM)
+  + claimTypeB (`rabbitmq://claimTypeB`) - RabbitMQ route to have the claim processed by Groovy processor B (located anywhere that has access to the RabbitMQ service)
+  + claimTypeC (`rabbitmq://claimTypeC`) - RabbitMQ route to have the claim processed by Ruby processor C (located anywhere that has access to the RabbitMQ service)
+  + claimTypeD (`rabbitmq://claimTypeD`) - RabbitMQ route to have the claim processed by JRuby processor D (located anywhere that has access to the RabbitMQ service)
 - route3 (`seda://claim-rrd-processed-{submission_id}`) - route used by processors to notify that a claim completed processing
 
 Processors:
 - `ClaimProcessorA` is written in Java and triggered by a SEDA route
 - `ClaimProcessorB` is written in Groovy and triggered by a RabbitMQ route
+- `ClaimProcessorC` is written in Ruby and triggered by a RabbitMQ route
 - `ClaimProcessorD` executes Ruby code within the JVM and triggered by a RabbitMQ route
 
-<!-- - internal REST endpoints
-  + route4 (`rest://post:/claim:processA/`) - to process claim of type A via a REST endpoint
-  + inject-claim (`rest://get:/claim:processA/`) -
- -->
+This diagram illustrates the Camel endpoints associated with the Camel routes:
+```mermaid
+flowchart TB
+
+subgraph API["REST endpoints"]
+  rest-POST-claim
+  claims-getAll
+  claims-getById
+  claimDetails-getById
+  claim-status-change
+  doc-api["api-doc"]
+end
+rest-POST-claim --> route2["seda://addClaim"]
+route2 --> route1["seda://logToFile"]
+route1 --> routing-claim["seda://claim-router"]
+
+subgraph processors["processor endpoints"]
+  claimTypeA["seda://claimTypeA"]
+  claimTypeB["rabbitmq://claimTypeB"]
+  claimTypeC["rabbitmq://claimTypeC"]
+  claimTypeD["rabbitmq://claimTypeD"]
+end
+
+routing-claim --> claimTypeA & claimTypeB & claimTypeC & claimTypeD
+
+claimTypeA & claimTypeB & claimTypeC & claimTypeD --> route3["seda://claim-rrd-processed-{submission_id}"]
+
+
+claims-getAll --> getAllClaims["ClaimService.getAllClaims"]
+claims-getById --> getClaim["ClaimService.getClaim({id})"]
+claimDetails-getById --> getClaimDetails["ClaimService.claimDetail({id})"]
+
+claim-status-change -. subscribesTo .-> route3
+```
 
 ## Run and Test
 
-For each new console, run `source sourceme.sh` to define convenience functions.
+Install Java, Gradle, and (optionally) Ruby. (Try [`asdf` runtime version manager](https://github.com/asdf-vm/asdf).)
+
+For each new console mentioned below, run `source sourceme.sh` to define convenience functions in your shell.
 
 1. In one console, start RabbitMQ: `startRabbitMQ`
-2. In another console, start the application: `./gradlew bootRun`
+2. In another console, start the application: `./gradlew bootRun`.
+  a. Visit http://localhost:8080/camelapp/api-doc in a browser to see the API docs autogenerated by Camel
 3. In another console, submit requests to the API:
 ```sh
+# (List all the claims)
 curlClaims
 # (Expect an empty array for the response)
+
+# (Submit a claim of type A)
 curlPostContention A
 
 curlClaims
 # (Note the `status` is `CREATED`)
-(wait 5 seconds)
+
+# (After a few seconds, check the claims)
 curlClaims
 # (Note the `status` is `DONE_RRD`)
 
+# (Now block until a change occurs, which will be done in the next step)
 curlWaitForStatusChange
-# (This blocks until a change occurs, which will be done in the next step)
 ```
 4. In another console, submit requests to the API:
 ```sh
 curlPostContention A
-# (Expect console in prior step to return a response with "resultStatus" : "Success")
+# (After a few seconds, expect console in prior step to return a response with "resultStatus" : "Success")
 ```
 5. To see what an error looks like on the server and client side, try:
 ```sh
