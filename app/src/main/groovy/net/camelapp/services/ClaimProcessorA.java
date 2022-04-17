@@ -1,5 +1,6 @@
 package net.camelapp.services;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import net.camelapp.models.Claim;
@@ -9,10 +10,16 @@ import net.camelapp.models.Payload;
 import java.util.HashMap;
 
 @Service
+@RequiredArgsConstructor
 public class ClaimProcessorA {
 
-    @Autowired
-    ClaimService claimService;
+    private final ClaimService claimService;
+
+    // Autowired constructor allows field to be final
+    // @Autowired
+    // ClaimProcessorA(ClaimService claimService){
+    //     this.claimService = claimService;
+    // }
 
     public Payload process(Claim claim) {
         HashMap<String, Object> results = new HashMap<String, Object>();

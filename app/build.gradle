@@ -5,7 +5,7 @@
 plugins {
     id 'net.camelapp.groovy-application-conventions'
 
-    // id 'io.freefair.lombok' version '6.3.0'
+    id 'io.freefair.lombok' version '6.3.0'
 
     // Spring
     id 'org.springframework.boot' version '2.6.6'

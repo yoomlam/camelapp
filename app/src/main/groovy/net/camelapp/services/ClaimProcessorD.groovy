@@ -11,9 +11,9 @@ import net.camelapp.models.Payload
 class ClaimProcessorD {
 
     @Autowired
-    ClaimService claimService
+    final ClaimService claimService
 
-    ScriptingContainer container = new ScriptingContainer()
+    final ScriptingContainer container = new ScriptingContainer()
 
     Payload process(Claim claim) {
         container.put('submission_id', claim.getSubmission_id())

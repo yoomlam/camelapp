@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 class ClaimProcessorB {
 
     @Autowired
-    ClaimService claimService
+    final ClaimService claimService
 
     Payload process(Claim claim) {
         def results = [

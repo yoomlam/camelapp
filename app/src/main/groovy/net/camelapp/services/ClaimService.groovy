@@ -10,7 +10,7 @@ import net.camelapp.models.ClaimStatus
 @Service
 class ClaimService {
     @Autowired
-    private ClaimRepository claimRepository
+    private final ClaimRepository claimRepository
 
     List<Claim> getAllClaims() {
         List<Claim> claimRecords = []
