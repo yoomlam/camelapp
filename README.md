@@ -246,3 +246,5 @@ Then retry contention C:
 ```sh
 curlPostContention C
 ```
+
+Read about [Writing a microservice in Ruby](https://www.cloudbees.com/blog/writing-microservice-in-ruby).
