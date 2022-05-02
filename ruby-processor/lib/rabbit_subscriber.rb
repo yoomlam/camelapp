@@ -2,6 +2,7 @@
 require 'bunny'
 require 'json'
 require 'health_data_assessor'
+require 'pry'
 
 class RabbitSubscriber
 
@@ -33,8 +34,7 @@ class RabbitSubscriber
     begin
       puts ' [*] Waiting for messages. To exit press CTRL+C'
       @queue.subscribe(block: true) do |delivery_info, properties, body|
-        puts " [x] Received #{body}"
-        # puts " => #{body.pack('C*')}"
+        puts " [x] Received body with size: #{body.size}"
         puts "reply_to: #{properties.reply_to}"
         puts "correlation_id: #{properties.correlation_id}"
         puts "Headers: #{properties.headers}"
@@ -45,7 +45,8 @@ class RabbitSubscriber
         puts delivery_info.routing_key  # => queue name
         puts delivery_info.exchange     # => ""
 
-        response = HealthDataAssessor.new.assess
+        json = JSON.parse(body)
+        response = HealthDataAssessor.new.assess(json['contention'], json['bp_observations'])
         puts "Response: #{response}"
         # response.bytes
         @exchange.publish(

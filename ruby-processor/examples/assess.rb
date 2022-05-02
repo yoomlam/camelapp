@@ -30,7 +30,7 @@ def reply_listener(channel, exchange_name:, queue_name:)
   queue.bind(exchange_name, routing_key: queue_name)
 
   queue.subscribe(block: false) do |delivery_info, properties, body|
-    puts " Received reply: #{body}"
+    puts " Received reply: #{JSON.pretty_generate(JSON.parse(body))}"
     puts "correlation_id: #{properties.correlation_id}"
   end
   queue
@@ -38,8 +38,10 @@ end
 reply_queue = reply_listener(channel, exchange_name: EXCHANGE_NAME, queue_name: REPLY_QUEUE_NAME)
 
 payload = {
-  contention: 'hypertension'
+  contention: 'hypertension',
+  bp_observations: File.read("examples/lighthouse_observations_resp.json")
 }
+
 publish_direct_to_queue=false
 if (publish_direct_to_queue)
   queue = channel.queue(SERVICE_QUEUE_NAME, CAMEL_MQ_PROPERTIES)

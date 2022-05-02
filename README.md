@@ -247,6 +247,6 @@ Then retry contention C:
 curlPostContention C
 ```
 
-Read about [Writing a microservice in Ruby](https://www.cloudbees.com/blog/writing-microservice-in-ruby).
-* `bin/assessor.rb` - runs example microservice
-* `examples/assess.rb` or `ruby examples/assess.rb` - acts as client
+Read about [Writing a microservice in Ruby](https://www.cloudbees.com/blog/writing-microservice-in-ruby) and run an example with RabbitMQ as the communication mechanism (for simplicity):
+* `bin/assessor.rb` - runs health-data-assessor microservice
+* `examples/assess.rb` or `ruby examples/assess.rb` - acts as client to the microservice
