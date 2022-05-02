@@ -248,3 +248,5 @@ curlPostContention C
 ```
 
 Read about [Writing a microservice in Ruby](https://www.cloudbees.com/blog/writing-microservice-in-ruby).
+* `bin/assessor.rb` - runs example microservice
+* `examples/assess.rb` or `ruby examples/assess.rb` - acts as client

@@ -4,6 +4,8 @@ echo "gem 'rspec', '~> 3.0'" >> Gemfile
 bundle install
 rspec --init
 
+https://www.cloudbees.com/blog/writing-microservice-in-ruby
+- created `config/setup.rb`
 
 ## In RabbitMQ docker container:
 
