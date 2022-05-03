@@ -4,8 +4,8 @@
 require 'active_support/all'
 
 class LighthouseObservationData
-  def initialize(response)
-    @response_body = JSON.parse(response)
+  def initialize(json_response)
+    @response_body = json_response
   end
 
   def transform

@@ -6,6 +6,8 @@ puts "Running setup.rb"
 
 # so we can henceforth require gems by name
 require 'bundler/setup'
+# Needed to include prawn-markup gem identified by ref in Gemfile
+Bundler.require(:default)
 
 # add the lib folder of our service to the load path
 lib_path = File.expand_path '../../lib', __FILE__

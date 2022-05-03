@@ -248,5 +248,6 @@ curlPostContention C
 ```
 
 Read about [Writing a microservice in Ruby](https://www.cloudbees.com/blog/writing-microservice-in-ruby) and run an example with RabbitMQ as the communication mechanism (for simplicity):
-* `bin/assessor.rb` - runs health-data-assessor microservice
-* `examples/assess.rb` or `ruby examples/assess.rb` - acts as client to the microservice
+* `bin/microservices.rb.rb` - runs a couple of microservices
+* `examples/assess.rb` - acts as client to call the `assess_health_data` microservice
+* `examples/generate_pdf.rb` - acts as client to call the `generate_pdf` microservice

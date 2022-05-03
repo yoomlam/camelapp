@@ -5,9 +5,9 @@ require 'json'
 require 'pry'
 
 CAMEL_MQ_PROPERTIES = { durable: true, auto_delete: true }
-EXCHANGE_NAME = 'assess_health_data'
-SERVICE_QUEUE_NAME = 'health_data_assessor'
-REPLY_QUEUE_NAME = 'example_assess'
+EXCHANGE_NAME = 'generate_pdf'
+SERVICE_QUEUE_NAME = 'pdf_generator'
+REPLY_QUEUE_NAME = 'example_generate_pdf'
 
 # http://rubybunny.info/articles/queues.html
 def setup_queue(channel, exchange_name:, queue_name:)
@@ -38,8 +38,9 @@ end
 reply_queue = reply_listener(channel, exchange_name: EXCHANGE_NAME, queue_name: REPLY_QUEUE_NAME)
 
 payload = {
-  contention: 'hypertension',
-  bp_observations: JSON.parse(File.read("examples/lighthouse_observations_resp.json"))
+  contention: 'asthma',
+  patient_info: JSON.parse(File.read("examples/patient_info.json")),
+  assessed_data: JSON.parse(File.read("examples/assessed_data_asthma.json"))
 }
 
 publish_direct_to_queue=false
