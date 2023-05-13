@@ -1,3 +1,7 @@
+
+# https://asdf-vm.com/guide/getting-started.html#local
+vim ~/.asdfrc
+
 rbenv local 2.7.4
 bundle init
 echo "gem 'rspec', '~> 3.0'" >> Gemfile
@@ -24,3 +28,12 @@ https://www.planetgeek.ch/2015/08/16/cleaning-up-queues-and-exchanges-on-rabbitm
 rabbitmqctl stop_app
 rabbitmqctl reset
 rabbitmqctl start_app
+
+## service-ruby
+
+docker-compose down
+docker-compose up -d --build
+
+ruby examples/assess.rb
+ruby examples/generate_pdf.rb
+
